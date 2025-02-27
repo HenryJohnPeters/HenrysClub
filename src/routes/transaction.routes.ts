@@ -3,14 +3,16 @@ import { TransactionController } from "../controllers/transactions/transaction";
 import { TransactionManager } from "../core/transactions/managers";
 import { UserBalanceManager, UserManager } from "../core/user/managers";
 import { TransactionRepository } from "../core/transactions/repositories";
+import {
+  UserBalanceRepository,
+  UserRepository,
+} from "../core/user/repositories";
 
 export class TransactionRoutes {
   private router: Router;
-  private controller: TransactionController;
 
-  constructor(transactionManager: TransactionManager) {
+  constructor(private controller: TransactionController) {
     this.router = Router();
-    this.controller = new TransactionController(transactionManager);
     this.initializeRoutes();
   }
 
@@ -24,8 +26,12 @@ export class TransactionRoutes {
   }
 }
 
-const userManager = new UserManager();
-const userBalanceManager = new UserBalanceManager();
+const userRepository = new UserRepository();
+const userManager = new UserManager(userRepository);
+
+const userBalanceRepository = new UserBalanceRepository();
+const userBalanceManager = new UserBalanceManager(userBalanceRepository);
+
 const transactionRepository = new TransactionRepository();
 
 const transactionManager = new TransactionManager(
@@ -34,4 +40,5 @@ const transactionManager = new TransactionManager(
   transactionRepository
 );
 
-export default new TransactionRoutes(transactionManager).getRouter();
+const transactionController = new TransactionController(transactionManager);
+export default new TransactionRoutes(transactionController).getRouter();

@@ -4,16 +4,18 @@ import {
   CreditTransaction,
   DebitTransaction,
 } from "../../core/transactions/models/transaction";
+import { TransactionType } from "../../core/transactions/models";
 
 export class TransactionController {
   constructor(private readonly manager: TransactionManager) {}
 
   public debit = async (req: Request, res: Response) => {
     try {
-      const usserBalance = await this.manager.debit(
-        req.body as DebitTransaction
+      const userBalance = await this.manager.processTransaction(
+        req.body as DebitTransaction,
+        TransactionType.DEBIT
       );
-      res.status(201).json(usserBalance);
+      res.status(201).json(userBalance);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
@@ -21,10 +23,11 @@ export class TransactionController {
 
   public credit = async (req: Request, res: Response) => {
     try {
-      const usserBalance = await this.manager.credit(
-        req.body as CreditTransaction
+      const userBalance = await this.manager.processTransaction(
+        req.body as CreditTransaction,
+        TransactionType.CREDIT
       );
-      res.status(201).json(usserBalance);
+      res.status(201).json(userBalance);
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }

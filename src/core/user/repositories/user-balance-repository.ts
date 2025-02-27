@@ -26,7 +26,7 @@ export class UserBalanceRepository {
 
   async add(
     userId: number,
-    amount: number,
+    balance: number,
     currencyCode: string = "USD"
   ): Promise<void> {
     try {
@@ -35,7 +35,7 @@ export class UserBalanceRepository {
         Item: {
           userId: userId,
           currencyCode: currencyCode,
-          amount: amount,
+          balance,
         },
         ConditionExpression:
           "attribute_not_exists(userId) AND attribute_not_exists(currencyCode)",
@@ -43,9 +43,6 @@ export class UserBalanceRepository {
 
       await db.send(command);
     } catch (error: any) {
-      if (error.name === "ConditionalCheckFailedException") {
-        throw new Error(`User balance for ${currencyCode} already exists.`);
-      }
       throw new Error(`Error creating user balance: ${JSON.stringify(error)}`);
     }
   }
@@ -62,7 +59,7 @@ export class UserBalanceRepository {
           userId: userId,
           currencyCode: currencyCode,
         },
-        UpdateExpression: "SET amount = amount + :amt",
+        UpdateExpression: "SET balance = balance + :amt",
         ConditionExpression:
           "attribute_exists(userId) AND attribute_exists(currencyCode)",
         ExpressionAttributeValues: {
@@ -72,9 +69,6 @@ export class UserBalanceRepository {
 
       await db.send(command);
     } catch (error: any) {
-      if (error.name === "ConditionalCheckFailedException") {
-        throw new Error(`User balance for ${currencyCode} does not exist.`);
-      }
       throw new Error(
         `Error incrementing user balance: ${JSON.stringify(error)}`
       );
@@ -93,9 +87,9 @@ export class UserBalanceRepository {
           userId: userId,
           currencyCode: currencyCode,
         },
-        UpdateExpression: "SET amount = amount - :amt",
+        UpdateExpression: "SET balance = balance - :amt",
         ConditionExpression:
-          "attribute_exists(userId) AND attribute_exists(currencyCode) AND amount >= :amt",
+          "attribute_exists(userId) AND attribute_exists(currencyCode) AND balance >= :amt",
         ExpressionAttributeValues: {
           ":amt": amount,
         },
@@ -103,11 +97,6 @@ export class UserBalanceRepository {
 
       await db.send(command);
     } catch (error: any) {
-      if (error.name === "ConditionalCheckFailedException") {
-        throw new Error(
-          `Insufficient balance or user balance for ${currencyCode} does not exist.`
-        );
-      }
       throw new Error(
         `Error decrementing user balance: ${JSON.stringify(error)}`
       );

@@ -10,16 +10,18 @@ export class DebitTransactionProcessor implements TransactionProcessor {
     transaction: DebitTransaction,
     userBalance: UserBalance
   ): Promise<UserBalance> {
+    if (transaction.amount > userBalance.balance)
+      throw new Error("Insufficent Funds");
+
     await this.userBalanceManager.decrementBalance(
       transaction.userId,
       transaction.amount
     );
-
     // Send events
     return {
       userId: transaction.userId,
       currencyCode: transaction.currencyCode,
-      amount: userBalance.amount - transaction.amount,
+      balance: userBalance.balance - transaction.amount,
     };
   }
 }

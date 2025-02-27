@@ -8,14 +8,6 @@ import {
 import { TransactionProcessorFactory } from "../processors/transaction-processor-factory";
 import { TransactionType } from "../models/transaction-type";
 import { UserBalance } from "../../user/models";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const DEFAULT_USER_BALANCE = parseInt(
-  process.env.DEFAULT_USER_BALANCE || "100",
-  10
-);
 
 export class TransactionManager {
   constructor(
@@ -24,15 +16,7 @@ export class TransactionManager {
     private readonly transactionRepository: TransactionRepository
   ) {}
 
-  public async credit(transaction: CreditTransaction): Promise<UserBalance> {
-    return this.processTransaction(transaction, TransactionType.CREDIT);
-  }
-
-  public async debit(transaction: DebitTransaction): Promise<UserBalance> {
-    return this.processTransaction(transaction, TransactionType.DEBIT);
-  }
-
-  private async processTransaction(
+  public async processTransaction(
     transaction: CreditTransaction | DebitTransaction,
     type: TransactionType
   ): Promise<UserBalance> {
@@ -42,32 +26,23 @@ export class TransactionManager {
     if (!user) throw new Error(`User not found: ${userId}`);
 
     const existingTx = await this.getByIdempotencyId(idempotencyId);
-    if (existingTx) {
+    if (existingTx)
       throw new Error(
         `Transaction with idempotencyId ${idempotencyId} already exists`
       );
-    }
 
     let userBalance = await this.userBalanceManager.get(userId);
     if (!userBalance) {
-      await this.userBalanceManager.add(userId, DEFAULT_USER_BALANCE);
-      userBalance = await this.userBalanceManager.get(userId);
+      userBalance = await this.userBalanceManager.add(userId);
       if (!userBalance)
         throw new Error(`Failed to create balance for user ${userId}`);
     }
 
-    const processorFactory = new TransactionProcessorFactory(
+    const processor = new TransactionProcessorFactory(
       this.userBalanceManager
-    );
-    await processorFactory.getProcessor(type).process(transaction, userBalance);
-
+    ).getProcessor(type);
     await this.add(transaction);
-
-    const updatedBalance = await this.userBalanceManager.get(userId);
-    if (!updatedBalance)
-      throw new Error(`Balance update failed for user ${userId}`);
-
-    return updatedBalance;
+    return await processor.process(transaction, userBalance);
   }
 
   public async getByIdempotencyId(

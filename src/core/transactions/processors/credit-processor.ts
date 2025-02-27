@@ -18,7 +18,7 @@ export class CreditTransactionProcessor implements TransactionProcessor {
     return {
       userId: transaction.userId,
       currencyCode: transaction.currencyCode,
-      amount: userBalance.amount + transaction.amount,
+      balance: userBalance.balance + transaction.amount,
     };
   }
 }
