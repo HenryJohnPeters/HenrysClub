@@ -1,0 +1,46 @@
+# Node dependencies
+node_modules/
+npm-debug.log*
+yarn-error.log
+pnpm-debug.log
+
+# Output directories
+dist/
+build/
+coverage/
+
+# TypeScript files
+*.tsbuildinfo
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Env files
+.env
+.env.*
+
+# IDE and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary files
+tmp/
+*.swp
+*.swo
+*.bak
+
+# AWS CDK / SAM (if relevant)
+.cdk.out/
+.aws-sam/
+
+# Optional if you're using Jest
+jest.config.js
+jest/
+
+# Ignore compiled JS/JSMap files if you keep them alongside TS
+*.js
+*.js.map
