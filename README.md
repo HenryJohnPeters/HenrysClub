@@ -1,16 +1,14 @@
 # CONFIGURATION:
 
-# - REGION: us-east-1
+REGION: us-east-1
 
-# - LOCAL ENDPOINT: http://localhost:8000
+LOCAL ENDPOINT: http://localhost:8000
 
-# Ensure that DynamoDB Local is running.
-
-# to run
+Ensure that DynamoDB Local is running to run
 
 docker run -d -p 8000:8000 amazon/dynamodb-local
 
-# ================= CREATE TABLES
+# CREATE TABLES
 
 # CREATE USERS
 
@@ -74,15 +72,17 @@ aws dynamodb put-item --table-name users --item '{
 "email": {"S": "janesmith@example.com"}
 }' --region us-east-1 --endpoint-url http://localhost:8000
 
-# ================ run
+# run
+
+npm i
 
 npm run start
 
-# or
+or
 
 npm run dev
 
-# =============== Postman requests
+# Postman requests
 
 # Get User Balance
 
