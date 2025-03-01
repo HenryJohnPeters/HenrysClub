@@ -1,4 +1,4 @@
-import { UserBalanceRepository, UserRepository } from "../repositories";
+import { UserBalanceRepository } from "../repositories";
 import { UserBalance } from "../models";
 import dotenv from "dotenv";
 dotenv.config();

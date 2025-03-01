@@ -17,8 +17,8 @@ export class TransactionRoutes {
   }
 
   private initializeRoutes() {
-    this.router.post("/credit", this.controller.credit);
-    this.router.post("/debit", this.controller.debit);
+    this.router.post("/credit", this.controller.credit.bind(this.controller));
+    this.router.post("/debit", this.controller.debit.bind(this.controller));
   }
 
   public getRouter(): Router {

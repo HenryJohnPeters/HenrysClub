@@ -26,13 +26,11 @@ export class UserRoutes {
   }
 }
 
-const userRepository = new UserRepository();
-const userManager = new UserManager(userRepository);
-
 const userBalanceRepository = new UserBalanceRepository();
 const userBalanceManager = new UserBalanceManager(userBalanceRepository);
-
-const userController = new UserController(userBalanceManager);
+const userRepository = new UserRepository();
+const userManager = new UserManager(userRepository);
+const userController = new UserController(userBalanceManager, userManager);
 
 const userRoutes = new UserRoutes(userController);
 
